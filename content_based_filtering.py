@@ -99,7 +99,7 @@ def calculate_similarity_scores(input_vector, data):
     return similarity_scores
 
 
-def content_recommendation(song_name,artist_name,songs_data, transformed_data, k=10):
+def recommend(song_name,artist_name,songs_data, transformed_data, k=10):
     """
     Recommends top k songs similar to the given song based on content-based filtering.
 
