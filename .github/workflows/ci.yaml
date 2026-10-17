@@ -4,7 +4,7 @@ on: push
 
 jobs:
   CI:
-    runs-on: self-hosted
+    runs-on: ubuntu-latest
     steps:
       - name: Code Checkout
         uses: actions/checkout@v4
@@ -20,14 +20,20 @@ jobs:
           python -m pip install --upgrade pip
           pip install -r requirements.txt
 
-
       - name: Run Application
         run: |
-          nohup streamlit run app.py --server.port 8000 &
-          sleep 30
+          nohup streamlit run app.py --server.port 8000 --server.headless true > streamlit.log 2>&1 &
+          for i in {1..30}; do
+            curl -s http://localhost:8000 > /dev/null && echo "App is up" && break
+            sleep 2
+          done
 
       - name: Test App
         run: pytest test_app.py
+
+      - name: Show Streamlit logs on failure
+        if: failure()
+        run: cat streamlit.log || true
 
       - name: Stop Streamlit app
         if: always()
